@@ -1,6 +1,35 @@
 version: "3"
 
 services:
+  kanban:
+    build:
+      context: /home/user/SnuboBoard
+      dockerfile: Dockerfile
+    image: snuboboard:latest
+    container_name: kanban
+    restart: unless-stopped
+    ports:
+      - "${PLANKA_PORT}:1337"
+    environment:
+      - BASE_URL=${BASE_URL}
+      - TRUST_PROXY=${TRUST_PROXY}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      - SECRET_KEY=${SECRET_KEY}
+      # Admin credentials
+      - DEFAULT_ADMIN_EMAIL=${PLANKA_ADMIN_EMAIL}
+      - DEFAULT_ADMIN_PASSWORD=${PLANKA_ADMIN_PASSWORD}
+      - DEFAULT_ADMIN_NAME=${PLANKA_ADMIN_NAME}
+      - DEFAULT_ADMIN_USERNAME=${PLANKA_ADMIN_USERNAME}
+      - NODE_ENV=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - kanban-files:/app/public/user-files
+      - kanban-user-avatars:/app/public/user-avatars
+      - kanban-project-background-images:/app/public/project-background-images
+      - kanban-attachments:/app/private/attachments
+
   postgres:
     image: postgres:15-alpine
     container_name: kanban-postgres
@@ -31,3 +60,7 @@ services:
 volumes:
   kanban-db:
     name: kanban-db-persistent
+  kanban-files:
+  kanban-user-avatars:
+  kanban-project-background-images:
+  kanban-attachments:
