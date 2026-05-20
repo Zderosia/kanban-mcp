@@ -120,8 +120,36 @@ export async function createTask(params: {
     try {
         const { cardId, name, position = 65535 } = params;
 
+        // Get the card to find existing task-lists
+        const cardResponse = await plankaRequest(`/api/cards/${cardId}`) as {
+            item: any;
+            included?: {
+                taskLists?: any[];
+            };
+        };
+
+        let taskListId: string;
+
+        // Find an existing task-list or create one
+        if (cardResponse?.included?.taskLists && Array.isArray(cardResponse.included.taskLists) && cardResponse.included.taskLists.length > 0) {
+            taskListId = cardResponse.included.taskLists[0].id;
+        } else {
+            // Create a default task-list
+            const taskListResponse = await plankaRequest(
+                `/api/cards/${cardId}/task-lists`,
+                {
+                    method: "POST",
+                    body: {
+                        name: "Tasks",
+                        position: 65535,
+                    },
+                },
+            ) as { item: { id: string } };
+            taskListId = taskListResponse.item.id;
+        }
+
         const response: any = await plankaRequest(
-            `/api/cards/${cardId}/tasks`,
+            `/api/task-lists/${taskListId}/tasks`,
             {
                 method: "POST",
                 body: { name, position },

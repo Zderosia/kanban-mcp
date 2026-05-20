@@ -4,19 +4,19 @@ import { z } from "zod";
 export const PlankaUserSchema = z.object({
   id: z.string(),
   email: z.string(),
-  name: z.string().nullable(),
+  name: z.string().nullable().optional(),
   username: z.string(),
-  avatarUrl: z.string().nullable(),
+  avatarUrl: z.string().nullable().optional(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaProjectSchema = z.object({
   id: z.string(),
   name: z.string(),
-  background: z.string().nullable(),
+  background: z.string().nullable().optional(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaBoardSchema = z.object({
@@ -25,7 +25,7 @@ export const PlankaBoardSchema = z.object({
   name: z.string(),
   position: z.number(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaListSchema = z.object({
@@ -34,7 +34,7 @@ export const PlankaListSchema = z.object({
   name: z.string(),
   position: z.number(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaLabelSchema = z.object({
@@ -43,7 +43,7 @@ export const PlankaLabelSchema = z.object({
   name: z.string(),
   color: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 // Define the stopwatch schema
@@ -56,23 +56,26 @@ export const PlankaCardSchema = z.object({
   id: z.string(),
   listId: z.string(),
   name: z.string(),
-  description: z.string().nullable(),
+  description: z.string().nullable().optional(),
   position: z.number(),
-  dueDate: z.string().nullable(),
+  dueDate: z.string().nullable().optional(),
   isCompleted: z.boolean().optional(),
   stopwatch: PlankaStopwatchSchema.nullable().optional(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaTaskSchema = z.object({
   id: z.string(),
-  cardId: z.string(),
+  cardId: z.string().optional(),
   name: z.string(),
   isCompleted: z.boolean(),
   position: z.number(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
+  taskListId: z.string().optional(),
+  linkedCardId: z.string().nullable().optional(),
+  assigneeUserId: z.number().nullable().optional(),
 });
 
 export const PlankaCommentSchema = z.object({
@@ -81,7 +84,7 @@ export const PlankaCommentSchema = z.object({
   userId: z.string(),
   text: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaAttachmentSchema = z.object({
@@ -91,7 +94,7 @@ export const PlankaAttachmentSchema = z.object({
   name: z.string(),
   url: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaCardMembershipSchema = z.object({
@@ -99,7 +102,7 @@ export const PlankaCardMembershipSchema = z.object({
   cardId: z.string(),
   userId: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string().nullable(),
+  updatedAt: z.string().nullable().optional(),
 });
 
 export const PlankaBoardMembershipSchema = z.object({

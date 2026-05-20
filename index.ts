@@ -171,6 +171,7 @@ server.tool(
     id: z.string().optional().describe("The ID of the list"),
     boardId: z.string().optional().describe("The ID of the board"),
     name: z.string().optional().describe("The name of the list"),
+    type: z.enum(["active", "closed"]).optional().describe("The type of the list"),
     position: z.number().optional().describe("The position of the list"),
   },
   async (args) => {
@@ -184,13 +185,14 @@ server.tool(
         break;
 
       case "create":
-        if (!args.boardId || !args.name || args.position === undefined)
+        if (!args.boardId || !args.name)
           throw new Error(
-            "boardId, name, and position are required for create action"
+            "boardId and name are required for create action"
           );
         result = await lists.createList({
           boardId: args.boardId,
           name: args.name,
+          type: args.type,
           position: args.position,
         });
         break;
@@ -256,6 +258,7 @@ server.tool(
       .optional()
       .describe("The ID of the project (if moving between projects)"),
     name: z.string().optional().describe("The name of the card"),
+    type: z.enum(["project", "story"]).optional().describe("The type of the card"),
     description: z.string().optional().describe("The description of the card"),
     position: z.number().optional().describe("The position of the card"),
     dueDate: z
@@ -297,8 +300,9 @@ server.tool(
         result = await cards.createCard({
           listId: args.listId,
           name: args.name,
-          description: args.description || "",
-          position: args.position || 0,
+          type: args.type,
+          description: args.description,
+          position: args.position,
         });
         break;
 
@@ -357,6 +361,7 @@ server.tool(
         result = await createCardWithTasks({
           listId: args.listId,
           name: args.name,
+          type: args.type,
           description: args.description,
           tasks: args.tasks,
           comment: args.comment,

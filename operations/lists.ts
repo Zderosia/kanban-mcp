@@ -14,11 +14,13 @@ import { PlankaListSchema } from "../common/types.js";
  * Schema for creating a new list
  * @property {string} boardId - The ID of the board to create the list in
  * @property {string} name - The name of the list
+ * @property {string} [type] - The type of the list: "active" or "closed" (default: "active")
  * @property {number} [position] - The position of the list in the board (default: 65535)
  */
 export const CreateListSchema = z.object({
     boardId: z.string().describe("Board ID"),
     name: z.string().describe("List name"),
+    type: z.enum(["active", "closed"]).optional().describe("List type (default: active)"),
     position: z.number().optional().describe("List position (default: 65535)"),
 });
 
@@ -85,14 +87,16 @@ const ListResponseSchema = z.object({
  */
 export async function createList(options: CreateListOptions) {
     try {
+        const body: Record<string, unknown> = {
+            name: options.name,
+            type: options.type ?? "active",
+            position: options.position ?? 65535,
+        };
         const response = await plankaRequest(
             `/api/boards/${options.boardId}/lists`,
             {
                 method: "POST",
-                body: {
-                    name: options.name,
-                    position: options.position,
-                },
+                body,
             },
         );
         const parsedResponse = ListResponseSchema.parse(response);

@@ -175,7 +175,7 @@ export async function createLabel(options: CreateLabelOptions) {
                 body: {
                     name: options.name,
                     color: options.color,
-                    position: options.position,
+                    position: options.position ?? 65535,
                 },
             },
         );
@@ -283,9 +283,8 @@ export async function deleteLabel(id: string) {
  */
 export async function addLabelToCard(cardId: string, labelId: string) {
     try {
-        // The correct endpoint is /api/cards/{cardId}/labels with labelId in the body
         await plankaRequest(
-            `/api/cards/${cardId}/labels`,
+            `/api/cards/${cardId}/card-labels`,
             {
                 method: "POST",
                 body: {
@@ -313,9 +312,8 @@ export async function addLabelToCard(cardId: string, labelId: string) {
  */
 export async function removeLabelFromCard(cardId: string, labelId: string) {
     try {
-        // The correct endpoint is /api/cards/{cardId}/labels/{labelId}
         await plankaRequest(
-            `/api/cards/${cardId}/labels/${labelId}`,
+            `/api/cards/${cardId}/card-labels/labelId:${labelId}`,
             {
                 method: "DELETE",
             },

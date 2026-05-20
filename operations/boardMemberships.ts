@@ -117,7 +117,7 @@ export async function createBoardMembership(
 ) {
     try {
         const response = await plankaRequest(
-            `/api/boards/${options.boardId}/memberships`,
+            `/api/boards/${options.boardId}/board-memberships`,
             {
                 method: "POST",
                 body: {
@@ -147,22 +147,19 @@ export async function createBoardMembership(
 export async function getBoardMemberships(boardId: string) {
     try {
         const response = await plankaRequest(
-            `/api/boards/${boardId}/memberships`,
+            `/api/boards/${boardId}/board-memberships`,
         );
 
         try {
-            // Try to parse as a BoardMembershipsResponseSchema first
             const parsedResponse = BoardMembershipsResponseSchema.parse(
                 response,
             );
             return parsedResponse.items;
         } catch (parseError) {
-            // If that fails, try to parse as an array directly
             if (Array.isArray(response)) {
                 return z.array(BoardMembershipSchema).parse(response);
             }
 
-            // If we get here, we couldn't parse the response in any expected format
             throw new Error(
                 `Could not parse board memberships response: ${
                     JSON.stringify(response)
@@ -170,7 +167,6 @@ export async function getBoardMemberships(boardId: string) {
             );
         }
     } catch (error) {
-        // If all else fails, return an empty array
         return [];
     }
 }
@@ -185,6 +181,9 @@ export async function getBoardMemberships(boardId: string) {
 export async function getBoardMembership(id: string) {
     try {
         const response = await plankaRequest(`/api/board-memberships/${id}`);
+        if (typeof response === "string" && response.includes("<!doctype html>")) {
+            throw new Error("No direct GET endpoint for board memberships. Use get_all with boardId instead.");
+        }
         const parsedResponse = BoardMembershipResponseSchema.parse(response);
         return parsedResponse.item;
     } catch (error) {

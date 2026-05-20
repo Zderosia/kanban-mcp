@@ -15,6 +15,7 @@ import { createComment } from "../operations/comments.js";
 export const createCardWithTasksSchema = z.object({
     listId: z.string().describe("The ID of the list to create the card in"),
     name: z.string().describe("The name of the card"),
+    type: z.enum(["project", "story"]).optional().describe("The type of the card (default: project)"),
     description: z.string().optional().describe("The description of the card"),
     tasks: z.array(z.string()).optional().describe(
         "Array of task descriptions to create",
@@ -51,7 +52,7 @@ export type CreateCardWithTasksParams = z.infer<
  * @throws {Error} If there's an error creating the card, tasks, or comment
  */
 export async function createCardWithTasks(params: CreateCardWithTasksParams) {
-    const { listId, name, description, tasks, comment, position = 65535 } =
+    const { listId, name, type, description, tasks, comment, position = 65535 } =
         params;
 
     try {
@@ -59,7 +60,8 @@ export async function createCardWithTasks(params: CreateCardWithTasksParams) {
         const card = await createCard({
             listId,
             name,
-            description: description || "",
+            type,
+            description,
             position,
         });
 

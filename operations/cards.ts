@@ -15,12 +15,14 @@ import { PlankaCardSchema, PlankaStopwatchSchema } from "../common/types.js";
  * Schema for creating a new card
  * @property {string} listId - The ID of the list to create the card in
  * @property {string} name - The name of the card
+ * @property {string} [type] - The type of the card: "project" or "story" (default: "project")
  * @property {string} [description] - The description of the card
  * @property {number} [position] - The position of the card in the list (default: 65535)
  */
 export const CreateCardSchema = z.object({
     listId: z.string().describe("List ID"),
     name: z.string().describe("Card name"),
+    type: z.enum(["project", "story"]).optional().describe("Card type (default: project)"),
     description: z.string().optional().describe("Card description"),
     position: z.number().optional().describe("Card position (default: 65535)"),
 });
@@ -136,15 +138,19 @@ const CardResponseSchema = z.object({
  */
 export async function createCard(options: CreateCardOptions) {
     try {
+        const body: Record<string, unknown> = {
+            name: options.name,
+            type: options.type ?? "project",
+            position: options.position ?? 65535,
+        };
+        if (options.description) {
+            body.description = options.description;
+        }
         const response = await plankaRequest(
             `/api/lists/${options.listId}/cards`,
             {
                 method: "POST",
-                body: {
-                    name: options.name,
-                    description: options.description,
-                    position: options.position,
-                },
+                body,
             },
         );
         const parsedResponse = CardResponseSchema.parse(response);
